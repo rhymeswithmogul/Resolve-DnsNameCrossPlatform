@@ -91,7 +91,7 @@ Function Resolve-DNSNameCrossPlatform
         [Switch] $TcpOnly,
 
 		[Parameter(Position=1)]
-		[ValidateSet("A", "AAAA", "A_AAAA", "CNAME", "MX", "NS", "SOA", "SRV", "TXT")]
+		[ValidateSet("UNKNOWN", "A_AAAA", "A", "AAAA", "CNAME", "MX", "NS", "SOA", "SRV", "TXT")]
 		[String] $Type = "A_AAAA"
 	)
 
@@ -242,7 +242,7 @@ Function Resolve-DNSNameCrossPlatform
                 }
             }
 
-            "A_AAAA"
+            {$_ -in @("A_AAAA", "UNKNOWN")}
             {
                 $dnsLookup | ForEach-Object `
                 {

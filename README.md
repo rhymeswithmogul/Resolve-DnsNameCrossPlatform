@@ -30,7 +30,7 @@ Parameter     | Description
 
 ### Supported Types
 The following values are currently supported for the `Type` parameter.  Note that they cannot be specified by number at this time.
-- [ ] UNKNOWN = 0,
+- [X] UNKNOWN = 0,
 - [X] A_AAAA = 0, the DNS query type is A_AAAA.
 - [X] A = 1, the DNS query type is IPv4 server Address.
 - [X] AAAA = 28, the DNS query type is IPv6 server address.
