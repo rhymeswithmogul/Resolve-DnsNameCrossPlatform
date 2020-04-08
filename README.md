@@ -13,7 +13,7 @@ Resolve-DnsNameCrossPlatform -Name www.bing.com -Server 10.0.0.1
 Resolve-DnsNameCrossPlatform -Name www.bing.com -Type A
 ```
 
-## SupportedParameters
+## Supported Parameters
 Not all parameters of `Resolve-DnsName` can be supported, as `dig` has no concept of NetBIOS or LLMNR.  At this time, the following will work:
 
 Parameter     | Description
