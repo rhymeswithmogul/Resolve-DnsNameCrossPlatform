@@ -1,7 +1,7 @@
 # Resolve-DnsNameCrossPlatform
 The Resolve-DnsNameCrossPlatform cmdlet performs a DNS query for the specified name.  This cmdlet is functionally similar to the `nslookup` tool or the Windows-only [`Resolve-DnsName`](https://docs.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname) cmdlet, both of which allow users to query for names.
 
-This module exists because `Resolve-DnsName` is not available on non-Windows platforms.  On macOS and Linux, this cmdlet will call out to the `dig` command.
+This module exists because `Resolve-DnsName` is not available on non-Windows platforms.  On macOS and Linux, this cmdlet will call out to the `dig` command.  `dig` is included with recent versions of macOS, but Linux users may need to install the [`bind-utils`](https://github.com/tigeli/bind-utils) package.
 
 Please note that this project is in a pre-alpha status.
 
@@ -14,7 +14,7 @@ Resolve-DnsNameCrossPlatform -Name www.bing.com -Type A
 ```
 
 ## SupportedParameters
-Not all parameters of `Resolve-DnsName` can be supported.  At this time, the following will work:
+Not all parameters of `Resolve-DnsName` can be supported, as `dig` has no concept of NetBIOS or LLMNR.  At this time, the following will work:
 
 Parameter     | Description
 ------------- | ---------------------
@@ -73,4 +73,3 @@ The output will consist of zero or more objects, that will contain all of the re
 They will be of the following types:
 - Windows: `Microsoft.DnsClient.Commands.DnsRecord`
 - macOS and Linux: `PSCustomObject`(s) with similar properties, methods, and aliases as the objects returned by Windows' `Resolve-DnsName`.  
-
