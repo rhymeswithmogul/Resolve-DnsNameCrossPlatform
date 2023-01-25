@@ -34,7 +34,7 @@ Function Resolve-DnsNameCrossPlatform
 	#
 	# It and the DnsClient module has been available since PowerShell 3.0,
 	# but only when running on Windows 8/Windows Server 2012 or newer.
-	If (Get-Command 'Resolve-DnsName' -ErrorAction SilentlyContinue)
+	If (Get-Command -Module 'DnsClient' -Name 'Resolve-DnsName' -ErrorAction SilentlyContinue)
 	{
 		$Parameters = @{
 			"Debug" = $DebugPreference;
@@ -138,10 +138,9 @@ Function Resolve-DnsNameCrossPlatform
 					# Microsoft.DnsClient.Commands.DnsRecord_A.  Try to add as
 					# many matching properties as we can.
 					$DnsRecord `
-					| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP4Address" -PassThru `
-					| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP4Address" -PassThru `
-					| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type" -PassThru `
-					| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+						| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP4Address" -PassThru `
+						| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP4Address" -PassThru `
+						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
@@ -166,8 +165,7 @@ Function Resolve-DnsNameCrossPlatform
 					$DnsRecord `
 						| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP6Address" -PassThru `
 						| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP6Address" -PassThru `
-						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
@@ -183,9 +181,7 @@ Function Resolve-DnsNameCrossPlatform
 						"Type" = "A";
 						"Section" = "Answer";
 					}
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
 
 					If ($_ -Match ':')
 					{
@@ -221,9 +217,7 @@ Function Resolve-DnsNameCrossPlatform
 						"Section" = "Answer";
 						"NameHost" = $_ -Replace "\.$"  # to emulate Resolve-DnsName
 					}
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost"
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
@@ -244,9 +238,7 @@ Function Resolve-DnsNameCrossPlatform
 						"NameExchange" = $splits[1] -Replace "\.$"  # to emulate Resolve-DnsName
 					}
 
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Exchange" -Value "NameExchange" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Exchange" -Value "NameExchange"
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
@@ -264,10 +256,7 @@ Function Resolve-DnsNameCrossPlatform
 						"Section" = "Answer";
 						"NameHost" = $_ -Replace "\.$"  # to emulate Resolve-DnsName
 					}
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
-
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost"
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
 				}
@@ -292,9 +281,7 @@ Function Resolve-DnsNameCrossPlatform
 						"DefaultTTL"             = [UInt32]$splits[6]
 					}
 
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Administrator" -Value "NameAdministrator" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Administrator" -Value "NameAdministrator"
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
@@ -317,10 +304,7 @@ Function Resolve-DnsNameCrossPlatform
 						"NameTarget" = [String]($_ -Split ' ')[3] -Replace "\.$"  # to emulate Resolve-DnsName
 					}
 
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Target" -Value "NameTarget" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
-
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Target" -Value "NameTarget"
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
 				}
@@ -338,10 +322,7 @@ Function Resolve-DnsNameCrossPlatform
 						"Strings" = $_
 					}
 
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Text" -Value "Strings" -PassThru `
-						| Add-Member -MemberType MethodProperty -Name "GetType" -Value {$_.Type}
-
+					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Text" -Value "Strings"
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
 				}

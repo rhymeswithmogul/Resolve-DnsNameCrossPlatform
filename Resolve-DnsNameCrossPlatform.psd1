@@ -12,7 +12,7 @@
 RootModule = 'src/Resolve-DnsNameCrossPlatform.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.0.1'
 
 # Supported PSEditions.
 CompatiblePSEditions = @("Core", "Desktop")
@@ -64,6 +64,7 @@ ModuleList = @()
 # List of all files packaged with this module
 FileList = @(
     "AUTHORS",
+    'CHANGELOG.md',
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "LICENSE",
