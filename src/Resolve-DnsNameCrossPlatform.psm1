@@ -1,6 +1,7 @@
-Function Resolve-DNSNameCrossPlatform
+Function Resolve-DnsNameCrossPlatform
 {
 	[CmdletBinding()]
+	[Alias('Resolve-DnsName')]
 	Param(
 		[Parameter(Mandatory=$true, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[ValidateNotNullOrEmpty()]
@@ -48,7 +49,7 @@ Function Resolve-DNSNameCrossPlatform
 			"Type" = $Type;
 			"Verbose" = $VerbosePreference
 		}
-		Return (Resolve-DnsName @Parameters)
+		Return (DnsClient\Resolve-DnsName @Parameters)
 	}
 
 	# If Resolve-DnsName is not available, we need to use the system's copy of

@@ -53,7 +53,7 @@ VariablesToExport = ''
 # Aliases to export from this module; for best performance, do not use
 # wildcards and do not delete the entry, and use an empty array if there
 # are no aliases to export.
-AliasesToExport = @()
+AliasesToExport = @('Resolve-DnsName')
 
 # DSC resources to export from this module
 DscResourcesToExport = @()
@@ -69,6 +69,7 @@ FileList = @(
     "LICENSE",
     'README.md',
     "Resolve-DnsNameCrossPlatform.psd1",
+    'en-US/Resolve-DnsNameCrossPlatform-help.xml',
     "src/Resolve-DnsNameCrossPlatform.psm1"
 )
 
