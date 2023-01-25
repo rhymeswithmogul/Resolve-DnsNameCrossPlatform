@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml" xmlns="http://msh">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Resolve-DNSNameCrossPlatform</command:name>
+      <command:verb>Resolve</command:verb>
+      <command:noun>DNSNameCrossPlatform</command:noun>
+      <maml:description>
+        <maml:para>Performs a DNS name query resolution for the specified name.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Resolve-DnsNameCrossPlatform cmdlet performs a DNS query for the specified name.  This cmdlet is functionally similar to the nslookup tool or the Windows-only Resolve-DnsName cmdlet, both of which allow users to query for names.</maml:para>
+      <maml:para>This cmdlet is meant to be a cross-platform implementation of as much of the Resolve-DnsName cmdlet as possible.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Resolve-DNSNameCrossPlatform</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Specifies the name to be resolved.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>The DNS resource record type which to query.</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">UNKNOWN</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">A_AAAA</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">A</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">AAAA</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">CNAME</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">MX</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">NS</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">SOA</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">SRV</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">TXT</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DnsOnly</maml:name>
+          <maml:description>
+            <maml:para>Resolves this query using only the DNS protocol.  This is the only option supported by this cmdlet, and is implied; specifying it changes nothing.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DnssecCd</maml:name>
+          <maml:description>
+            <maml:para>Sets the DNSSEC checking-disabled bit for this query.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DnssecOk</maml:name>
+          <maml:description>
+            <maml:para>Sets the DNSSEC OK bit for this query.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>NoIdn</maml:name>
+          <maml:description>
+            <maml:para>Specifies not to use IDN encoding logic for the query.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>NoRecursion</maml:name>
+          <maml:description>
+            <maml:para>Instructs the server to not use recursion when resolving this query.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Server</maml:name>
+          <maml:description>
+            <maml:para>Specifies the IP addresses or host name of the DNS servers to be queried.  By default the interface DNS servers are queried if this parameter is not supplied.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>TcpOnly</maml:name>
+          <maml:description>
+            <maml:para>Uses only TCP for this query.  By default, this cmdlet will try UDP first, and fall back to TCP if needed, or if EDNS0 queries fail.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DnsOnly</maml:name>
+        <maml:description>
+          <maml:para>Resolves this query using only the DNS protocol.  This is the only option supported by this cmdlet, and is implied; specifying it changes nothing.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DnssecCd</maml:name>
+        <maml:description>
+          <maml:para>Sets the DNSSEC checking-disabled bit for this query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DnssecOk</maml:name>
+        <maml:description>
+          <maml:para>Sets the DNSSEC OK bit for this query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Specifies the name to be resolved.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>NoIdn</maml:name>
+        <maml:description>
+          <maml:para>Specifies not to use IDN encoding logic for the query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>NoRecursion</maml:name>
+        <maml:description>
+          <maml:para>Instructs the server to not use recursion when resolving this query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Server</maml:name>
+        <maml:description>
+          <maml:para>Specifies the IP addresses or host name of the DNS servers to be queried.  By default the interface DNS servers are queried if this parameter is not supplied.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>TcpOnly</maml:name>
+        <maml:description>
+          <maml:para>Uses only TCP for this query.  By default, this cmdlet will try UDP first, and fall back to TCP if needed, or if EDNS0 queries fail.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Type</maml:name>
+        <maml:description>
+          <maml:para>The DNS resource record type which to query.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.PSCustomObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The PSCustomObject (similar to Microsoft.DnsClient.Commands.DnsRecord) contains all of the records returned from the wire for the specified DNS query.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>On Windows, this cmdlet simply calls Resolve-DnsName.  On macOS and Linux, the dig (domain information grouper) tool must be installed.  It's included with recent versions of macOS, but Linux users will need to install the bind-utils package to make this work.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Resolve-DnsNameCrossPlatform -Name www.bing.com</dev:code>
+        <dev:remarks>
+          <maml:para>This example resolves a name using the default options.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Resolve-DnsNameCrossPlatform -Name www.bing.com -Server 10.0.0.1</dev:code>
+        <dev:remarks>
+          <maml:para>This example resolves a name against the DNS server at 10.0.0.1.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Resolve-DnsNameCrossPlatform -Name www.bing.com -Type A</dev:code>
+        <dev:remarks>
+          <maml:para>This example queries for A type records for name www.bing.com.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/rhymeswithmogul/Resolve-DnsNameCrossPlatform/blob/master/man/en-US/Resolve-DnsNameCrossPlatform.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>GitHub</maml:linkText>
+        <maml:uri>https://github.com/rhymeswithmogul/Resolve-DnsNameCrossPlatform</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Resolve-DnsName</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+</helpItems>

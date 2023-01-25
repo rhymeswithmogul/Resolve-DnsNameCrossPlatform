@@ -9,10 +9,10 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'Resolve-DnsNameCrossPlatform'
+RootModule = 'src/Resolve-DnsNameCrossPlatform.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '1.0.0'
 
 # Supported PSEditions.
 CompatiblePSEditions = @("Core", "Desktop")
@@ -24,7 +24,7 @@ GUID = '20218a91-1eb1-4952-952d-b8f3398ea621'
 Author = 'Colin Cogle'
 
 # Copyright statement for this module.
-Copyright = '(c) 2020 Colin Cogle. All rights reserved.'
+Copyright = '(c) 2020, 2023 Colin Cogle. All rights reserved.'
 
 # Description of the functionality provided by this module.
 Description = 'A cross-platform implementation of the Resolve-DnsName cmdlet.'
@@ -67,8 +67,9 @@ FileList = @(
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "LICENSE",
+    'README.md',
     "Resolve-DnsNameCrossPlatform.psd1",
-    "Resolve-DnsNameCrossPlatform.psm1"
+    "src/Resolve-DnsNameCrossPlatform.psm1"
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
@@ -77,7 +78,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @("dig", "DNS", "nslookup")
+        Tags = @("dig", "DNS", "nslookup", "DnsClient")
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/rhymeswithmogul/Resolve-DnsNameCrossPlatform/blob/master/LICENSE'
@@ -92,7 +93,7 @@ PrivateData = @{
         ReleaseNotes = 'Linux users should install the bind-utils package, so that the dig (domain information grouper) command is available.  dig is available on macOS since at least High Sierra.'
 
         # Prerelease string of this module
-        Prerelease = 'canary'
+        # Prerelease = ''
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         RequireLicenseAcceptance = $false
