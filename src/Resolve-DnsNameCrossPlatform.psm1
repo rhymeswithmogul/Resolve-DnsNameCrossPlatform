@@ -56,41 +56,50 @@ Function Resolve-DnsNameCrossPlatform
 	# dig, and try to emulate the style of output that Resolve-DnsName creates.
 	Else
 	{
+		# Find dig.  By default, we will use /usr/bin/dig.
+		$DigApp = (Get-Command 'dig' -ErrorAction Stop).Source
+
 		# Build our dig command by translating Resolve-DnsName parameters
 		# into dig options.
-		$CommandLine = "/usr/bin/dig -t $Type $Name +short"
-		If ($DnssecCd)
-		{
-			$CommandLine += " +cdflag"
-		}
-		If ($DnssecOk)
-		{
-			$CommandLine += " +dnssec"
-		}
-		If ($NoIdn)
-		{
-			$CommandLine += " +noidnout"
-		}
-		If ($NoRecursion)
-		{
-			$CommandLine += " +norecurse"
-		}
+		$CommandLine = [String[]]@()
 		If ($null -ne $Server)
 		{
 			If ($Server.Count -gt 1)
 			{
 				Write-Warning "Multiple DNS servers are not yet supported.  Only the first one will be tried."
-				$CommandLine += " @$($Server[0])"
+				$CommandLine += "@$($Server[0])"
 			}
 			Else
 			{
-				$CommandLine += " @$Server"
+				$CommandLine += "@$Server"
 			}
+		}
+
+		$CommandLine += $Name
+		$CommandLine += $Type
+		$CommandLine += '+short'
+		
+		If ($DnssecCd)
+		{
+			$CommandLine += "+cdflag"
+		}
+		If ($DnssecOk)
+		{
+			$CommandLine += "+dnssec"
+		}
+		If ($NoIdn)
+		{
+			$CommandLine += "+noidnout"
+		}
+		If ($NoRecursion)
+		{
+			$CommandLine += "+norecurse"
 		}
 		If ($TcpOnly)
 		{
-			$CommandLine += " +tcp"
+			$CommandLine += "+tcp"
 		}
+
 
 		# Resolve-DnsName supports the "meta-type" A_AAAA, which returns both
 		# A records and AAAA records.  dig does not support that natively, so
@@ -99,14 +108,18 @@ Function Resolve-DnsNameCrossPlatform
 		{
 			# Explicitly cast it to String[] so we add to the array properly.
 			[String[]] $dnsLookup  = @()
-			[String[]] $dnsLookup  = Invoke-Expression ($CommandLine -Replace $Type,"A")
-			[String[]] $dnsLookup += Invoke-Expression ($CommandLine -Replace $Type,"AAAA")
+
+			$ALookup = $CommandLine -Replace $Type,'A'
+			[String[]] $dnsLookup += (Invoke-Dig $ALookup -DigPath $DigApp)
+
+			$AAAALookup = $CommandLine -Replace $Type,'AAAA'
+			[String[]] $dnsLookup += (Invoke-Dig $AAAALookup -DigPath $DigApp)
 		}
 		# If the user specified a real RR type, then we'll just call dig
 		# normally.
 		Else
 		{
-			$dnsLookup = Invoke-Expression $CommandLine
+			$dnsLookup = (Invoke-Dig $CommandLine -DigPath $DigApp)
 		}
 
 		If (-Not $dnsLookup)
@@ -349,4 +362,25 @@ Function Resolve-DnsNameCrossPlatform
 	{
 		Return $ResourceRecords
 	}
+}
+
+Function Invoke-Dig {
+	[CmdletBinding()]
+	[OutputType([String[]])]
+	Param(
+		[Parameter(Mandatory, Position=0)]
+		[ValidateNotNullOrEmpty()]
+		[String[]] $ArgumentList,
+
+		[ValidateNotNullOrEmpty()]
+		[Alias('DigPath')]
+		[String] $FilePath = '/usr/bin/dig'
+	)
+
+	Write-Debug "Running command: $FilePath $($ArgumentList -Join ' ')"
+	$retval = (Invoke-Command -ScriptBlock {. $FilePath $ArgumentList}) -Split "[\r\n]+"
+
+	Write-Debug "Return value: $retval"
+
+	Return $retval
 }
