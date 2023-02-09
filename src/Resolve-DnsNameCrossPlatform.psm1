@@ -1,6 +1,9 @@
+#Requires -Version 5.0
+
 Function Resolve-DnsNameCrossPlatform
 {
 	[CmdletBinding()]
+	[OutputType([DnsRecord_Base[]])]
 	[Alias('Resolve-DnsName')]
 	Param(
 		[Parameter(Mandatory=$true, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -77,7 +80,9 @@ Function Resolve-DnsNameCrossPlatform
 
 		$CommandLine += $Name
 		$CommandLine += $Type
-		$CommandLine += '+short'
+		$CommandLine += '-r'		# don't read ~/.digrc
+		$CommandLine += '+noall'	# don't show anything...
+		$CommandLine += '+answer'	# ...but do show answer lines
 		
 		If ($DnssecCd)
 		{
@@ -129,221 +134,120 @@ Function Resolve-DnsNameCrossPlatform
 		}
 
 		# Our result.
-		$ResourceRecords = @()
+		$ResourceRecords = [DnsRecord_Base[]]@()
 
 		# To best mimic Resolve-DnsName, return results as custom objects with
 		# the same properties.  This makes things as similar as possible.
-		Switch ($Type)
-		{
-			"A"
+		$dnsLookup | ForEach-Object {
+			$DigOutputLine = $_
+			Write-Debug "DIG output line: $DigOutputLine"
+
+			# The DNS record type will be the fourth token:
+			# e.g., "example.com. 3600 IN AAAA 2001:db8::1"
+			#                             ^^^^
+			$RRType = ($_ -Split "\s+",5)[3]
+			Switch ($RRType)
 			{
-				$dnsLookup | ForEach-Object `
+				"A"
 				{
-					Write-Debug "$Name has the IPv4 address $_."
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = $Type;
-						"Section" = "Answer";
-						"IP4Address" = $_
-					}
-
-					# On Windows, Resolve-DnsName will return object(s) of type
-					# Microsoft.DnsClient.Commands.DnsRecord_A.  Try to add as
-					# many matching properties as we can.
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP4Address" -PassThru `
-						| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP4Address" -PassThru `
-						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
-
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_A]::new($Name)
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has the IPv4 address $($DnsRecord.IPAddress)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"AAAA"
-			{
-				$dnsLookup | ForEach-Object `
+				"AAAA"
 				{
-					Write-Debug "$Name has the IPv6 address $_."
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = $Type;
-						"Section" = "Answer";
-						"IP6Address" = $_
-					}
-
-					# On Windows, Resolve-DnsName will return object(s) of type
-					# Microsoft.DnsClient.Commands.DnsRecord_AAAA.  Try to add
-					# as many matching properties as we can.
-					$DnsRecord `
-						| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP6Address" -PassThru `
-						| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP6Address" -PassThru `
-						| Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
-
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_AAAA]::new($Name)
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has the IPv6 address $($DnsRecord.IPAddress)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			{$_ -in @("A_AAAA", "UNKNOWN")}
-			{
-				$dnsLookup | ForEach-Object `
+				{$_ -in @("A_AAAA", "UNKNOWN")}
 				{
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = "A";
-						"Section" = "Answer";
-					}
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "QueryType" -Value "Type"
-
-					If ($_ -Match ':')
+					If ($_ -Match "\bAAAA\b")
 					{
-						Write-Debug "$Name has the IPv6 address $_."
-						$DnsRecord.Type = "AAAA"
-						$DnsRecord `
-							| Add-Member -MemberType NoteProperty -Name "IP6Address" -Value $_ -PassThru `
-							| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP6Address" -PassThru `
-							| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP6Address"
+						$DnsRecord = [DnsRecord_AAAA]::new()
+						Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+						Write-Debug "$Name has the IPv6 address $($DnsRecord.IPAddress)."
 					}
 					Else
 					{
-						Write-Debug "$Name has the IPv4 address $_."
-						$DnsRecord `
-							| Add-Member -MemberType NoteProperty -Name "IP4Address" -Value $_ -PassThru `
-							| Add-Member -MemberType AliasProperty -Name "IPAddress" -Value "IP4Address" -PassThru `
-							| Add-Member -MemberType AliasProperty -Name "Address" -Value "IP4Address"
+						$DnsRecord = [DnsRecord_A]::new()
+						Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+						Write-Debug "$Name has the IPv4 address $($DnsRecord.IPAddress)."
 					}
 
 					# Append it to our results.
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"CNAME"
-			{
-				$dnsLookup | ForEach-Object `
+				"CNAME"
 				{
-					Write-Debug "$Name has the CNAME $_"
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = $Type;
-						"Section" = "Answer";
-						"NameHost" = $_ -Replace "\.$"  # to emulate Resolve-DnsName
-					}
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost"
-
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_CNAME]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name is an alias for $($DnsRecord.NameHost)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"MX"
-			{
-				$dnsLookup | ForEach-Object `
+				"MX"
 				{
-					$splits = $_ -Split ' '
-					Write-Debug "$Name has a mail exchanger $($splits[1]) at priority $($splits[0])."
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = $Type;
-						"Section" = "Answer";
-						"Preference" = $splits[0]
-						"NameExchange" = $splits[1] -Replace "\.$"  # to emulate Resolve-DnsName
-					}
-
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Exchange" -Value "NameExchange"
-
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_MX]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has a mail exchanger $($DnsRecord.NameExchange) at priority $($DnsRecord.Preference)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"NS"
-			{
-				$dnsLookup | ForEach-Object `
+				"NS"
 				{
-					Write-Debug "$Name has a nameserver $_"
-					$DnsRecord = [PSCustomObject]@{
-						"Name" = $Name;
-						"Type" = $Type;
-						"Section" = "Answer";
-						"NameHost" = $_ -Replace "\.$"  # to emulate Resolve-DnsName
-					}
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Server" -Value "NameHost"
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_NS]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has the nameserver $($DnsRecord.NameHost)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"SOA"
-			{
-				$dnsLookup | ForEach-Object `
+				'RRSIG'
 				{
-					$splits = $_ -Split ' '
-					Write-Debug "$Name has an SOA record: MNAME $($splits[0]), RNAME $($splits[1]), serial $($splits[2]), refresh $($splits[3]), retry $($splits[4]), expire $($splits[5]), negative cache TTL $($splits[6])."
-					$DnsRecord = [PSCustomObject]@{
-						"Name"                   = $Name;
-						"Type"                   = $Type;
-						"Section"                = "Authority";
-						"PrimaryServer"          = $splits[0] -Replace "\.$"
-						"NameAdministrator"      = $splits[1] -Replace "\.$"
-						"SerialNumber"           = [UInt32]$splits[2]
-						"TimeToZoneRefresh"      = [UInt32]$splits[3]
-						"TimeToZoneFailureRetry" = [UInt32]$splits[4]
-						"TimeToExpiration"       = [UInt32]$splits[5]
-						"DefaultTTL"             = [UInt32]$splits[6]
-					}
-
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Administrator" -Value "NameAdministrator"
-
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_RRSIG]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has RRSIG data: $($DnsRecord.Signature)"
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"SRV"
-			{
-				$dnsLookup | ForEach-Object `
+				"SOA"
 				{
-					$splits = $_ -Split ' '
-					Write-Debug "$Name is a service on $($splits[3]):$($splits[2]), priority $($splits[0]), weight $($splits[1])."
-					$DnsRecord = [PSCustomObject]@{
-						"Name"       = $Name;
-						"Type"       = $Type;
-						"Section"    = "Answer";
-						"Priority"   = [UInt16]($_ -Split ' ')[0]
-						"Weight"     = [UInt16]($_ -Split ' ')[1]
-						"Port"       = [UInt16]($_ -Split ' ')[2]
-						"NameTarget" = [String]($_ -Split ' ')[3] -Replace "\.$"  # to emulate Resolve-DnsName
-					}
-
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Target" -Value "NameTarget"
-					# Append it to our results.
+					$DnsRecord = [DnsRecord_SOA]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					Write-Debug "$Name has an SOA record: MNAME $($DnsRecord.PrimaryServer), RNAME $($DnsRecord.NameAdministrator), serial $($DnsRecord.SerialNumber), refresh $($DnsRecord.TimeToZoneRefresh), retry $($DnsRecord.TimeToZoneFailureRetry)), expire $($DnsRecord.TimeToExpiration), default TTL $($DnsRecord.DefaultTTL)."
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			"TXT"
-			{
-				$dnsLookup | ForEach-Object `
+				"SRV"
 				{
-					Write-Debug "$Name has a text record: $_"
-					$DnsRecord = [PSCustomObject]@{
-						"Name"    = $Name;
-						"Type"    = $Type;
-						"Section" = "Answer";
-						"Strings" = $_
+					$DnsRecord = [DnsRecord_SRV]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine $DigOutputLine
+					If ($DnsRecord.NameTarget = '.') {
+						Write-Debug "$Name is a service that does not exist."
 					}
-
-					$DnsRecord | Add-Member -MemberType AliasProperty -Name "Text" -Value "Strings"
-					# Append it to our results.
+					Else {
+						Write-Debug "$Name is a service on $($DnsRecord.NameTarget):$($DnsRecord.Port), priority $($DnsRecord.Priority), weight $($DnsRecord.Weight)."
+					}
 					$ResourceRecords += $DnsRecord
 				}
-			}
 
-			default
-			{
-				Write-Error "$Type records are not yet implemented."
+				"TXT"
+				{
+					$DnsRecord = [DnsRecord_TXT]::new()
+					Set-InstanceProperties $DnsRecord -DigOutputLine ($DigOutputLine -Replace '" "','')
+					Write-Debug "$Name has text data: $($DnsRecord.Strings)"
+					$ResourceRecords += $DnsRecord
+				}
+
+				default
+				{
+					Write-Error "$RRType records are not yet implemented."
+				}
 			}
 		}
 	}
@@ -378,9 +282,30 @@ Function Invoke-Dig {
 	)
 
 	Write-Debug "Running command: $FilePath $($ArgumentList -Join ' ')"
-	$retval = (Invoke-Command -ScriptBlock {. $FilePath $ArgumentList}) -Split "[\r\n]+"
+	$DigOutput = (Invoke-Command -ScriptBlock {. $FilePath $ArgumentList}) -Split "[\r\n]+"
 
-	Write-Debug "Return value: $retval"
+	Write-Debug "Results: $DigOutput"
+	Return $DigOutput
+}
 
-	Return $retval
+Function Set-InstanceProperties {
+	[CmdletBinding()]
+	[OutputType([Void])]
+	Param(
+		[Parameter(Mandatory)]
+		[DnsRecord_Base]
+		[ref]$InputObject,
+
+		[ValidateNotNullOrEmpty()]
+		[String] $DigOutputLine
+	)
+
+	$Tokens = $DigOutputLine -Split "\s+",5
+	Write-Debug "Tokens: $($Tokens -Join ',')"
+
+	$InputObject.Name  = $Tokens[0]
+	$InputObject.TTL   = $Tokens[1]
+	$InputObject.Class = $Tokens[2]
+	$InputObject.Type  = $Tokens[3]
+	$InputObject.SetData($Tokens[4])
 }

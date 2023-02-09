@@ -12,7 +12,7 @@
 RootModule = 'src/Resolve-DnsNameCrossPlatform.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.2'
+ModuleVersion = '2.0.0'
 
 # Supported PSEditions.
 CompatiblePSEditions = @("Core", "Desktop")
@@ -35,7 +35,10 @@ PowerShellVersion = '5.1'
 
 # Script files (.ps1) that are run in the caller's environment prior to
 # importing this module.
-# ScriptsToProcess = @()
+ScriptsToProcess = @('src/Classes.ps1')
+
+# Format files (.Format.ps1xml) to process.
+FormatsToProcess = @('src/DnsRecords.Format.ps1xml')
 
 # Functions to export from this module; for best performance, do not use
 # wildcards and do not delete the entry, and use an empty array if there
@@ -71,6 +74,7 @@ FileList = @(
     'README.md',
     "Resolve-DnsNameCrossPlatform.psd1",
     'en-US/Resolve-DnsNameCrossPlatform-help.xml',
+    "src/DnsRecords.Format.ps1xml"
     "src/Resolve-DnsNameCrossPlatform.psm1"
 )
 
@@ -95,7 +99,7 @@ PrivateData = @{
         ReleaseNotes = 'Linux users should install the bind-utils package, so that the dig (domain information grouper) command is available.  dig is available on macOS since at least High Sierra.'
 
         # Prerelease string of this module
-        # Prerelease = ''
+        Prerelease = 'alpha'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         RequireLicenseAcceptance = $false
